@@ -474,34 +474,36 @@ final class CoolUtil
 	 */
 	@:noUsing public static function playMusic(path:String, Persist:Bool = false, Volume:Float = 1, Looped:Bool = true, DefaultBPM:Float = 102, ?Group:FlxSoundGroup) {
 		Conductor.reset();
-		if (FlxG.sound.music == null || !FlxG.sound.music.exists) FlxG.sound.music = new FlxSound();
-		else if (FlxG.sound.music.active) FlxG.sound.music.stop();
-		FlxG.sound.music.loadEmbedded(path, Looped);
-		FlxG.sound.music.volume = Volume;
-		FlxG.sound.music.persist = Persist;
-		FlxG.sound.defaultMusicGroup.add(FlxG.sound.music);
+		FlxG.sound.playMusic(path, Volume, Looped, Group);
+		if (FlxG.sound.music != null) {
+			FlxG.sound.music.persist = Persist;
+		}
 
-		var iniPath = '${Path.withoutExtension(path)}.ini';
-		var musicData = Assets.exists(iniPath) ? IniUtil.parseAsset(iniPath)["Global"] : null;
-		if (musicData != null) {
-			if (musicData["LoopTime"] != null) FlxG.sound.music.loopTime = Std.parseFloat(musicData["LoopTime"]) * 1000;
-			if (musicData["EndTime"] != null) FlxG.sound.music.endTime = Std.parseFloat(musicData["EndTime"]) * 1000;
-			if (musicData["Offset"] != null) FlxG.sound.music.offset = Std.parseFloat(musicData["Offset"]) * 1000;
+		var infoPath = '${Path.withoutExtension(path)}.ini';
+		if (Assets.exists(infoPath)) {
+			var musicInfo = IniUtil.parseAsset(infoPath, [
+				"BPM" => null,
+				"TimeSignature" => Flags.DEFAULT_BEATS_PER_MEASURE + "/" + Flags.DEFAULT_STEPS_PER_BEAT,
+				"LoopTime" => '${Flags.DEFAULT_LOOP_TIME}'
+			]);
 
-			var timeSignParsed:Array<Null<Float>> = musicData["TimeSignature"] == null ? [] : [for(s in musicData["TimeSignature"].split("/")) Std.parseFloat(s)];
-			var beatsPerMeasure:Float = Flags.DEFAULT_BEATS_PER_MEASURE, stepsPerBeat:Float = Flags.DEFAULT_STEPS_PER_BEAT;
-			if (timeSignParsed.length == 2) {
-				beatsPerMeasure = Math.isNaN(timeSignParsed[0]) ? Flags.DEFAULT_BEATS_PER_MEASURE : timeSignParsed[0];
-				stepsPerBeat = Math.isNaN(timeSignParsed[1]) ? Flags.DEFAULT_STEPS_PER_BEAT : (16 / timeSignParsed[1]); // from denominator
+			if (FlxG.sound.music != null)
+				FlxG.sound.music.loopTime = Std.parseFloat(musicInfo["LoopTime"]) * 1000;
+
+			var timeSignParsed:Array<Null<Float>> = musicInfo["TimeSignature"] == null ? [] : [for(s in musicInfo["TimeSignature"].split("/")) Std.parseFloat(s)];
+			var beatsPerMeasure:Float = Flags.DEFAULT_BEATS_PER_MEASURE;
+			var stepsPerBeat:Int = Flags.DEFAULT_STEPS_PER_BEAT;
+
+			// Check later, i don't think timeSignParsed can contain null, only nan
+			if (timeSignParsed.length == 2 && !timeSignParsed.contains(null)) {
+				beatsPerMeasure = timeSignParsed[0] == null || timeSignParsed[0] <= 0 ? Flags.DEFAULT_BEATS_PER_MEASURE : cast timeSignParsed[0];
+				stepsPerBeat = timeSignParsed[1] == null || timeSignParsed[1] <= 0 ? Flags.DEFAULT_STEPS_PER_BEAT : cast timeSignParsed[1];
 			}
 
-			var bpm:Float = Std.parseFloat(musicData["BPM"]).getDefault(DefaultBPM);
-			Conductor.changeBPM(bpm, beatsPerMeasure, Math.floor(stepsPerBeat));
-		}
-		else
+			var bpm:Null<Float> = Std.parseFloat(musicInfo["BPM"]).getDefault(DefaultBPM);
+			Conductor.changeBPM(bpm, beatsPerMeasure, stepsPerBeat);
+		} else
 			Conductor.changeBPM(DefaultBPM);
-
-		FlxG.sound.music.play();
 	}
 
 	/**

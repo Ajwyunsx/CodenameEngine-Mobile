@@ -32,7 +32,7 @@ class MemoryCounter extends Sprite {
 
 	public function reload() {}
 
-	public override function __enterFrame(t:Float) {
+	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 		super.__enterFrame(t);
 

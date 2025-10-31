@@ -174,7 +174,7 @@ class SystemInfo extends FramerateCategory {
 		super("System Info");
 	}
 
-	public override function __enterFrame(t:Float) {
+	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 
 		_text = __formattedSysText;

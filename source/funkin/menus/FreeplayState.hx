@@ -264,15 +264,6 @@ class FreeplayState extends MusicBeatState
 		if (!disableAutoPlay && !songInstPlaying && (autoplayElapsed > timeUntilAutoplay)) {
 			if (curPlayingInst != (curPlayingInst = Paths.inst(curSong.name, curDifficulties[curDifficulty], curSong.instSuffix))) {
 				var streamed = false;
-				if (Options.streamedMusic) {
-					var sound = Assets.getMusic(curPlayingInst, true, false);
-					streamed = sound != null;
-
-					if (streamed && autoplayShouldPlay) {
-						FlxG.sound.playMusic(sound, 0);
-						Conductor.changeBPM(curSong.bpm, curSong.beatsPerMeasure, curSong.stepsPerBeat);
-					}
-				}
 
 				if (!streamed) {
 					var huh:Void->Void = function() {

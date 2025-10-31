@@ -4,8 +4,6 @@ import flixel.FlxState;
 import flixel.sound.FlxSound;
 import funkin.backend.utils.NativeAPI;
 import lime.media.AudioManager;
-import lime.media.AudioSource;
-import haxe.Timer;
 
 /**
  * if you are stealing this keep this comment at least please lol
@@ -14,56 +12,58 @@ import haxe.Timer;
  */
 @:dox(hide)
 class AudioSwitchFix {
-	public static function onAudioDisconnected() @:privateAccess {
-		var sources:Array<{source:AudioSource, playing:Bool, time:Float, gain:Float, pitch:Float, position:lime.math.Vector4}> = [];
-		for (source in AudioSource.activeSources) {
-			var wasPlaying = source.playing;
-			sources.push({
-				source: source,
-				playing: wasPlaying,
-				time: source.currentTime,
-				gain: source.gain,
-				pitch: source.pitch,
-				position: source.position
-			});
+	@:noCompletion
+	private static function onStateSwitch(state:FlxState):Void {
+		#if windows
+			if (Main.audioDisconnected) {
 
-			source.__backend.dispose();
-			if (wasPlaying) source.__backend.playing = true;
-		}
+				var playingList:Array<PlayingSound> = [];
+				for(e in FlxG.sound.list) {
+					if (e.playing) {
+						playingList.push({
+							sound: e,
+							time: e.time
+						});
+						e.stop();
+					}
+				}
+				if (FlxG.sound.music != null)
+					FlxG.sound.music.stop();
 
-		AudioManager.shutdown();
-		AudioManager.init();
-		// #if !lime_doc_gen
-		// if (AudioManager.context.type == OPENAL)
-		// {
-		// 	var alc = AudioManager.context.openal;
+				AudioManager.shutdown();
+				AudioManager.init();
+				// #if !lime_doc_gen
+				// if (AudioManager.context.type == OPENAL)
+				// {
+				// 	var alc = AudioManager.context.openal;
 
-		// 	var device = alc.openDevice();
-		// 	var ctx = alc.createContext(device);
-		// 	alc.makeContextCurrent(ctx);
-		// 	alc.processContext(ctx);
-		// }
-		// #end
-		
-		for (d in sources) {
-			d.source.__backend.init();
-			d.source.currentTime = d.time;
-			d.source.gain = d.gain;
-			d.source.pitch = d.pitch;
-			d.source.position = d.position;
+				// 	var device = alc.openDevice();
+				// 	var ctx = alc.createContext(device);
+				// 	alc.makeContextCurrent(ctx);
+				// 	alc.processContext(ctx);
+				// }
+				// #end
+				Main.changeID++;
 
-			if (d.playing) d.source.play();
-		}
+				for(e in playingList) {
+					e.sound.play(e.time);
+				}
 
-		Main.changeID++;
-		Main.audioDisconnected = false;
+				Main.audioDisconnected = false;
+			}
+		#end
 	}
 
-	private static var timer:Timer;
-
-	private static function onRun() if (Main.audioDisconnected) onAudioDisconnected();
 	public static function init() {
+		#if windows
 		NativeAPI.registerAudio();
-		if (timer == null) (timer = new Timer(1000)).run = onRun;
+		FlxG.signals.preStateCreate.add(onStateSwitch);
+		#end
 	}
+}
+
+@:dox(hide)
+typedef PlayingSound = {
+	var sound:FlxSound;
+	var time:Float;
 }

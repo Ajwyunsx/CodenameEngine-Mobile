@@ -7,7 +7,7 @@ class FlixelInfo extends FramerateCategory {
 		super("Flixel Info");
 	}
 
-	public override function __enterFrame(t:Float) {
+	public override function __enterFrame(t:Int) {
 		if (alpha <= 0.05) return;
 
 

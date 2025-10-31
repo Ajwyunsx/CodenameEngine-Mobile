@@ -106,7 +106,7 @@ class Framerate extends Sprite {
 
 
 	var debugAlpha:Float = 0;
-	public override function __enterFrame(t:Float) {
+	public override function __enterFrame(t:Int) {
 		alpha = CoolUtil.fpsLerp(alpha, debugMode > 0 ? 1 : 0, 0.5);
 		debugAlpha = CoolUtil.fpsLerp(debugAlpha, debugMode > 1 ? 1 : 0, 0.5);
 		#if android
