@@ -690,7 +690,7 @@ class Charter extends UIState {
 		else
 			vocals = new FlxSound();
 
-		vocals.muted = !PlayState.SONG.meta.needsVoices;
+		//vocals.muted = !PlayState.SONG.meta.needsVoices;
 		vocals.group = FlxG.sound.defaultMusicGroup;
 
 		gridBackdrops.createGrids(PlayState.SONG.strumLines.length);
