@@ -356,10 +356,15 @@ final class Conductor
 	}
 
 	private static function __updateSongPos(elapsed:Float) {
-		if (FlxG.sound.music != null) { // CNE FlxSound is Interpolated.
-			lastSongPos = FlxG.sound.music.time - songOffset;
-			if (FlxG.sound.music.playing) songPosition = FlxG.sound.music.time;
+		if (FlxG.sound.music == null || !FlxG.sound.music.playing) {
+			lastSongPos = FlxG.sound.music != null ? FlxG.sound.music.time - songOffset : -songOffset;
+			return;
 		}
+
+		if (lastSongPos != (lastSongPos = FlxG.sound.music.time - songOffset))
+			songPosition = lastSongPos;
+		else
+			songPosition += songOffset + elapsed * 1000;
 	}
 
 	private static function onStateSwitch(newState:FlxState) {

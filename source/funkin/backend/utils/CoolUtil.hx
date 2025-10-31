@@ -932,11 +932,10 @@ final class CoolUtil
 	 * @param music Music
 	 */
 	public static inline function setMusic(frontEnd:SoundFrontEnd, music:FlxSound) {
-		if (frontEnd.music == music) return;
-
-		if (frontEnd.music != null) @:privateAccess frontEnd.destroySound(frontEnd.music);
+		if (frontEnd.music != null)
+			@:privateAccess frontEnd.destroySound(frontEnd.music);
 		frontEnd.list.remove(music);
-		frontEnd.defaultMusicGroup.add(frontEnd.music = music);
+		frontEnd.music = music;
 	}
 
 	/**
