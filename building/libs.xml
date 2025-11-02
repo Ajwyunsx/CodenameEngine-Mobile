@@ -29,6 +29,8 @@
 		<lib name="format" />
 		<lib name="hxp" />
 
+		<git name="linc_luajit" url="https://github.com/th2l-devs/linc_luajit" />
+
 		<git name="hxcpp" url="https://github.com/HomuHomu833-haxelibs/hxcpp" />
 	</if>
 </libraries>
