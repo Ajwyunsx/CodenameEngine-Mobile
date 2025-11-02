@@ -52,6 +52,8 @@
 	<!-- Comment this out to disable updates !-->
 	<define name="UPDATE_CHECKING" unless="web || hl || neko"/>
 
+	<define name="LUA_ALLOW" if="desktop || android" />
+
 	<!-- Comment this out to disable Discord RPC !-->
 	<section if="cpp">
 		<define name="DISCORD_RPC" if="desktop"/>
@@ -128,6 +130,7 @@
 
 	<haxelib name="flixel" />
 	<haxelib name="flixel-addons" />
+	<haxelib name="linc_luajit" if="LUA_ALLOW"/>
 
 	<haxelib name="hxvlc" if="VIDEO_CUTSCENES" />
 	<haxelib name="away3d" if="THREE_D_SUPPORT" />
