@@ -41,12 +41,20 @@ class LScripts extends Script {
                 Logs.trace('Failed to parse script at ${path}: ${err}');
             else
                 Logs.trace('Failed to parse script: ${err}');
+
+			#if mobile
+            NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", err, MSG_ERROR);
+	        #end
         };
 		_lua.functionError = (func:String, err:String) -> {
             if(path != null)
                 Logs.trace('Failed to call function "$func" at ${path}: ${err}');
             else
                 Logs.trace('Failed to call function "$func": ${err}');
+
+			#if mobile
+            NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", err, MSG_ERROR);
+	        #end
         };
 		_lua.tracePrefix = (path != null) ? fileName : 'Lua';
 		//_lua.parseError = importFailedCallback;
@@ -111,6 +119,7 @@ class LScripts extends Script {
                 Logs.logText('Script Error: ', RED),
                 Logs.logText('Failed to get error message from Lua state', RED)
             ], ERROR);
+			
             return;
         }
         
@@ -124,6 +133,9 @@ class LScripts extends Script {
             NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", fn + err, MSG_ERROR);
 	    #end
     } catch(e:Dynamic) {
+		#if mobile
+            NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", fn + err, MSG_ERROR);
+	    #end
         Logs.traceColored([
             Logs.logText('Critical Error: ', RED),
             Logs.logText('Error handler failed: ${Std.string(e)}', RED)
@@ -194,3 +206,4 @@ class LScripts extends Script {
 	// 	this._lua.GlobalVars = map;
 	// }
 }
+
