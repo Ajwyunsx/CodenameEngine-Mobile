@@ -134,7 +134,7 @@ class LScripts extends Script {
 	    #end
     } catch(e:Dynamic) {
 		#if mobile
-            NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", fn + err, MSG_ERROR);
+            NativeAPI.showMessageBox("Codename Engine Crash Handler (Lua)", err, MSG_ERROR);
 	    #end
         Logs.traceColored([
             Logs.logText('Critical Error: ', RED),
@@ -206,4 +206,5 @@ class LScripts extends Script {
 	// 	this._lua.GlobalVars = map;
 	// }
 }
+
 
